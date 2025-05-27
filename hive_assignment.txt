@@ -1,0 +1,450 @@
+[cloudera@localhost ~]$ hive
+Logging initialized using configuration in jar:file:/usr/lib/hive/lib/hive-common-0.10.0-cdh4.4.0.jar!/hive-log4j.properties
+Hive history file=/tmp/cloudera/hive_job_log_0c325fcc-81cd-4bb5-9a62-25fe66b1ece5_2615142.txt
+hive> CREATE EXTERNAL TABLE IF NOT EXISTS LOGS_ANALYSIS(log_date STRING,log_level STRING,service_name STRING,message STRING)ROW FORMAT DELIMITED FIELDS TERMINATED BY ','STORED AS TEXTFILE LOCATION '/user/cloudera/files';
+OK
+Time taken: 1.547 seconds
+hive> SHOW tables;
+OK
+final_data1
+log1
+logs_analysis
+movie_data
+Time taken: 0.708 seconds
+hive> DESCRIBE FORMATTED logs_analysis;
+OK
+# col_name            	data_type           	comment             
+	 	 
+log_date            	string              	None                
+log_level           	string              	None                
+service_name        	string              	None                
+message             	string              	None                
+	 	 
+# Detailed Table Information	 	 
+Database:           	default             	 
+Owner:              	cloudera            	 
+CreateTime:         	Fri May 09 22:09:39 PDT 2025	 
+LastAccessTime:     	UNKNOWN             	 
+Protect Mode:       	None                	 
+Retention:          	0                   	 
+Location:           	hdfs://localhost.localdomain:8020/user/cloudera/ust	 
+Table Type:         	EXTERNAL_TABLE      	 
+Table Parameters:	 	 
+	EXTERNAL            	TRUE                
+	transient_lastDdlTime	1746853779          
+	 	 
+# Storage Information	 	 
+SerDe Library:      	org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe	 
+InputFormat:        	org.apache.hadoop.mapred.TextInputFormat	 
+OutputFormat:       	org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat	 
+Compressed:         	No                  	 
+Num Buckets:        	-1                  	 
+Bucket Columns:     	[]                  	 
+Sort Columns:       	[]                  	 
+Storage Desc Params:	 	 
+	field.delim         	,                   
+	serialization.format	,                   
+Time taken: 0.224 seconds
+hive> LOAD DATA INPATH '/user/cloudera/files' INTO TABLE LOGS_ANALYSIS;
+Loading data to table default.logs_analysis
+Table default.logs_analysis stats: [num_partitions: 0, num_files: 0, num_rows: 0, total_size: 0, raw_data_size: 0]
+OK
+Time taken: 1.537 seconds
+hive> SELECT * FROM LOGS_ANALYSIS LIMIT 10;
+OK
+2025-05-01 11:39:00	INFO	InventoryService	Order placed
+2025-05-01 11:25:00	WARN	PaymentService	Address not verified
+2025-05-01 12:49:00	ERROR	ShippingService	Shipping error
+2025-05-01 14:33:00	WARN	ShippingService	Slow response time
+2025-05-01 10:27:00	INFO	ShippingService	Inventory updated
+2025-05-01 14:11:00	INFO	PaymentService	Order placed
+2025-05-01 12:28:00	ERROR	OrderService	Payment failed
+2025-05-01 13:54:00	ERROR	OrderService	Payment failed
+2025-05-01 14:54:00	ERROR	AuthService	Order placement failed
+2025-05-01 10:54:00	WARN	OrderService	Address not verified
+Time taken: 0.307 seconds
+hive> SELECT COUNT(*) FROM LOGS_ANALYSIS;
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapred.reduce.tasks=<number>
+Starting Job = job_202505092051_0002, Tracking URL = http://0.0.0.0:50030/jobdetails.jsp?jobid=job_202505092051_0002
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_202505092051_0002
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2025-05-10 04:19:04,181 Stage-1 map = 0%,  reduce = 0%
+2025-05-10 04:19:10,229 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.29 sec
+2025-05-10 04:19:11,245 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.29 sec
+2025-05-10 04:19:12,258 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.29 sec
+2025-05-10 04:19:13,269 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.29 sec
+2025-05-10 04:19:14,286 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.29 sec
+2025-05-10 04:19:15,298 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.43 sec
+2025-05-10 04:19:16,309 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.43 sec
+2025-05-10 04:19:17,323 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.43 sec
+2025-05-10 04:19:18,336 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.43 sec
+MapReduce Total cumulative CPU time: 2 seconds 430 msec
+Ended Job = job_202505092051_0002
+MapReduce Jobs Launched: 
+Job 0: Map: 1  Reduce: 1   Cumulative CPU: 2.43 sec   HDFS Read: 6350 HDFS Write: 4 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 430 msec
+OK
+100
+Time taken: 20.632 seconds
+hive> SELECT log_leveL,COUNT(*) AS l WHERE GROUP BY log_level;
+FAILED: ParseException line 1:31 mismatched input 'WHERE' expecting FROM near 'l' in from clause
+
+hive> SELECT log_leveL,COUNT(*) AS l FROM logs_analysis GROUP BY log_level;
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapred.reduce.tasks=<number>
+Starting Job = job_202505092051_0003, Tracking URL = http://0.0.0.0:50030/jobdetails.jsp?jobid=job_202505092051_0003
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_202505092051_0003
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2025-05-10 04:27:38,359 Stage-1 map = 0%,  reduce = 0%
+2025-05-10 04:27:43,385 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:44,393 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:45,400 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:46,408 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:47,417 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:48,434 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:49,448 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.74 sec
+2025-05-10 04:27:50,462 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.87 sec
+2025-05-10 04:27:51,473 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.87 sec
+2025-05-10 04:27:52,482 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.87 sec
+2025-05-10 04:27:53,494 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.87 sec
+MapReduce Total cumulative CPU time: 2 seconds 870 msec
+Ended Job = job_202505092051_0003
+MapReduce Jobs Launched: 
+Job 0: Map: 1  Reduce: 1   Cumulative CPU: 2.87 sec   HDFS Read: 6350 HDFS Write: 25 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 870 msec
+OK
+ERROR	38
+INFO	33
+WARN	29
+Time taken: 21.833 seconds
+hive> SELECT service_name,COUNT(*) AS ERROR_RATE FROM LOGS_ANALYSIS WHERE log_level='ERROR' GROUP BY service_name;
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapred.reduce.tasks=<number>
+Starting Job = job_202505092051_0004, Tracking URL = http://0.0.0.0:50030/jobdetails.jsp?jobid=job_202505092051_0004
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_202505092051_0004
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2025-05-10 05:21:18,130 Stage-1 map = 0%,  reduce = 0%
+2025-05-10 05:21:25,179 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.25 sec
+2025-05-10 05:21:26,190 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.25 sec
+2025-05-10 05:21:27,204 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.25 sec
+2025-05-10 05:21:28,224 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.25 sec
+2025-05-10 05:21:29,238 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.25 sec
+2025-05-10 05:21:30,256 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.44 sec
+2025-05-10 05:21:31,272 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.44 sec
+2025-05-10 05:21:32,288 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.44 sec
+2025-05-10 05:21:33,301 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.44 sec
+MapReduce Total cumulative CPU time: 2 seconds 440 msec
+Ended Job = job_202505092051_0004
+MapReduce Jobs Launched: 
+Job 0: Map: 1  Reduce: 1   Cumulative CPU: 2.44 sec   HDFS Read: 6350 HDFS Write: 85 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 440 msec
+OK
+AuthService	4
+InventoryService	5
+OrderService	10
+PaymentService	8
+ShippingService	11
+Time taken: 20.272 seconds
+hive> select * FROM LOGS_ANALYSIS WHERE log_date LIKE'2025-05-01%;
+FAILED: ParseException line 1:59 cannot recognize input near '<EOF>' '<EOF>' '<EOF>' in expression specification
+
+hive> select * FROM LOGS_ANALYSIS WHERE log_date LIKE '2025-05-01%';                
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_202505092051_0005, Tracking URL = http://0.0.0.0:50030/jobdetails.jsp?jobid=job_202505092051_0005
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_202505092051_0005
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2025-05-10 05:24:10,264 Stage-1 map = 0%,  reduce = 0%
+2025-05-10 05:24:15,289 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.97 sec
+2025-05-10 05:24:16,298 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.97 sec
+2025-05-10 05:24:17,310 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.97 sec
+2025-05-10 05:24:18,321 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.97 sec
+MapReduce Total cumulative CPU time: 970 msec
+Ended Job = job_202505092051_0005
+MapReduce Jobs Launched: 
+Job 0: Map: 1   Cumulative CPU: 0.97 sec   HDFS Read: 6350 HDFS Write: 6125 SUCCESS
+Total MapReduce CPU Time Spent: 970 msec
+OK
+2025-05-01 11:39:00	INFO	InventoryService	Order placed
+2025-05-01 11:25:00	WARN	PaymentService	Address not verified
+2025-05-01 12:49:00	ERROR	ShippingService	Shipping error
+2025-05-01 14:33:00	WARN	ShippingService	Slow response time
+2025-05-01 10:27:00	INFO	ShippingService	Inventory updated
+2025-05-01 14:11:00	INFO	PaymentService	Order placed
+2025-05-01 12:28:00	ERROR	OrderService	Payment failed
+2025-05-01 13:54:00	ERROR	OrderService	Payment failed
+2025-05-01 14:54:00	ERROR	AuthService	Order placement failed
+2025-05-01 10:54:00	WARN	OrderService	Address not verified
+2025-05-01 14:38:00	ERROR	ShippingService	Payment failed
+2025-05-01 11:18:00	INFO	OrderService	Order placed
+2025-05-01 12:44:00	INFO	PaymentService	Order placed
+2025-05-01 12:24:00	WARN	OrderService	Low stock alert
+2025-05-01 13:41:00	WARN	ShippingService	Inventory nearing threshold
+2025-05-01 10:51:00	ERROR	ShippingService	Order placement failed
+2025-05-01 12:25:00	WARN	PaymentService	Retrying payment
+2025-05-01 11:28:00	ERROR	PaymentService	Order placement failed
+2025-05-01 13:18:00	INFO	ShippingService	Inventory updated
+2025-05-01 10:42:00	INFO	OrderService	Order placed
+2025-05-01 13:16:00	INFO	InventoryService	Order placed
+2025-05-01 14:26:00	INFO	AuthService	Shipping started
+2025-05-01 10:58:00	WARN	InventoryService	Address not verified
+2025-05-01 12:04:00	ERROR	ShippingService	User authentication failed for user 105
+2025-05-01 10:04:00	INFO	InventoryService	Order placed
+2025-05-01 11:04:00	WARN	ShippingService	Address not verified
+2025-05-01 13:56:00	ERROR	OrderService	Order placement failed
+2025-05-01 10:12:00	WARN	OrderService	Address not verified
+2025-05-01 11:26:00	WARN	OrderService	Inventory nearing threshold
+2025-05-01 11:32:00	INFO	AuthService	User login successful for user 102
+2025-05-01 13:32:00	ERROR	InventoryService	Shipping error
+2025-05-01 14:49:00	WARN	AuthService	Low stock alert
+2025-05-01 12:44:00	WARN	InventoryService	Inventory nearing threshold
+2025-05-01 10:27:00	INFO	PaymentService	Inventory updated
+2025-05-01 11:27:00	ERROR	InventoryService	Inventory sync error
+2025-05-01 11:52:00	INFO	ShippingService	Inventory updated
+2025-05-01 10:19:00	WARN	AuthService	Low stock alert
+2025-05-01 10:17:00	INFO	AuthService	User login successful for user 110
+2025-05-01 13:03:00	ERROR	ShippingService	Shipping error
+2025-05-01 10:30:00	INFO	OrderService	Payment processed
+2025-05-01 10:31:00	WARN	OrderService	Address not verified
+2025-05-01 10:28:00	ERROR	OrderService	Order placement failed
+2025-05-01 11:36:00	INFO	InventoryService	Inventory updated
+2025-05-01 10:18:00	WARN	PaymentService	Address not verified
+2025-05-01 11:40:00	INFO	PaymentService	Payment processed
+2025-05-01 11:21:00	INFO	PaymentService	User login successful for user 106
+2025-05-01 10:51:00	ERROR	InventoryService	Inventory sync error
+2025-05-01 12:41:00	ERROR	OrderService	Shipping error
+2025-05-01 12:40:00	INFO	AuthService	Shipping started
+2025-05-01 14:31:00	WARN	OrderService	Retrying payment
+2025-05-01 14:49:00	ERROR	ShippingService	User authentication failed for user 106
+2025-05-01 14:56:00	ERROR	PaymentService	Shipping error
+2025-05-01 11:31:00	ERROR	PaymentService	User authentication failed for user 104
+2025-05-01 12:31:00	ERROR	ShippingService	User authentication failed for user 101
+2025-05-01 11:33:00	WARN	AuthService	Slow response time
+2025-05-01 10:14:00	ERROR	InventoryService	Inventory sync error
+2025-05-01 12:54:00	WARN	AuthService	Low stock alert
+2025-05-01 11:08:00	INFO	PaymentService	User login successful for user 107
+2025-05-01 13:14:00	ERROR	ShippingService	User authentication failed for user 109
+2025-05-01 10:34:00	ERROR	OrderService	Payment failed
+2025-05-01 10:38:00	INFO	AuthService	Shipping started
+2025-05-01 10:25:00	INFO	PaymentService	Inventory updated
+2025-05-01 11:16:00	INFO	ShippingService	User login successful for user 100
+2025-05-01 13:18:00	INFO	ShippingService	Inventory updated
+2025-05-01 11:43:00	WARN	OrderService	Address not verified
+2025-05-01 13:15:00	ERROR	ShippingService	Payment failed
+2025-05-01 11:49:00	INFO	InventoryService	Shipping started
+2025-05-01 13:33:00	ERROR	OrderService	Inventory sync error
+2025-05-01 13:53:00	ERROR	OrderService	Payment failed
+2025-05-01 12:36:00	INFO	OrderService	Shipping started
+2025-05-01 14:59:00	ERROR	AuthService	Inventory sync error
+2025-05-01 13:28:00	ERROR	AuthService	Order placement failed
+2025-05-01 12:51:00	WARN	OrderService	Slow response time
+2025-05-01 10:14:00	INFO	ShippingService	User login successful for user 107
+2025-05-01 14:41:00	WARN	PaymentService	Inventory nearing threshold
+2025-05-01 11:13:00	ERROR	PaymentService	User authentication failed for user 109
+2025-05-01 14:13:00	INFO	OrderService	Shipping started
+2025-05-01 10:46:00	ERROR	InventoryService	Order placement failed
+2025-05-01 14:41:00	ERROR	ShippingService	Shipping error
+2025-05-01 10:04:00	WARN	AuthService	Inventory nearing threshold
+2025-05-01 12:46:00	INFO	PaymentService	Inventory updated
+2025-05-01 11:00:00	WARN	ShippingService	Low stock alert
+2025-05-01 11:38:00	ERROR	OrderService	Inventory sync error
+2025-05-01 10:11:00	WARN	InventoryService	Address not verified
+2025-05-01 11:11:00	ERROR	OrderService	User authentication failed for user 110
+2025-05-01 10:20:00	ERROR	PaymentService	User authentication failed for user 106
+2025-05-01 13:50:00	ERROR	ShippingService	Payment failed
+2025-05-01 12:55:00	ERROR	PaymentService	Order placement failed
+2025-05-01 11:13:00	ERROR	AuthService	Inventory sync error
+2025-05-01 10:54:00	WARN	OrderService	Inventory nearing threshold
+2025-05-01 14:01:00	INFO	AuthService	User login successful for user 102
+2025-05-01 10:06:00	ERROR	PaymentService	Payment failed
+2025-05-01 13:51:00	WARN	AuthService	Address not verified
+2025-05-01 14:18:00	WARN	OrderService	Retrying payment
+2025-05-01 11:01:00	INFO	AuthService	Order placed
+2025-05-01 10:35:00	ERROR	PaymentService	Inventory sync error
+2025-05-01 11:40:00	WARN	ShippingService	Slow response time
+2025-05-01 11:54:00	WARN	PaymentService	Retrying payment
+2025-05-01 11:53:00	INFO	AuthService	Order placed
+2025-05-01 13:01:00	INFO	InventoryService	Order placed
+Time taken: 13.656 seconds
+hive> CREATE EXTERNAL TABLE PARTITIONED_LOGS(log_date STRING,log_level STRING,service_name STRING,message STRING)PARTITIONED BY (log_date STRING)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+FAILED: SemanticException [Error 10035]: Column repeated in partitioning columns
+hive> CREATE EXTERNAL TABLE PARTITIONED_LOGS(log_date STRING,log_level STRING,service_name STRING,message STRING)PARTITIONED BY (log_date STRING)ROW FORMAT D)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+FAILED: SemanticException [Error 10035]: Column repeated in partitioning columns
+hive> CREATE EXTERNAL TABLE PARTITIONED_LOGS(log_date STRING,log_level STRING,service_name STRING,message STRING)PARTITIONED BY (log_date STRING)ROW FORMAT D)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+[1]+  Stopped                 hive
+[cloudera@localhost ~]$ hive
+Logging initialized using configuration in jar:file:/usr/lib/hive/lib/hive-common-0.10.0-cdh4.4.0.jar!/hive-log4j.properties
+Hive history file=/tmp/cloudera/hive_job_log_8c8e5997-28cf-4e4d-b3b6-bda48730f60b_1899507247.txt
+hive> CREATE EXTERNAL TABLE PARTITIONED_LOGS(log_level STRING,service_name STRING,message STRING)PARTITIONED BY (log_date STRING)ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+OK
+Time taken: 1.705 seconds
+hive> FROM LOGS_ANALYSIS pd INSERT OVERWRITE TABLE PARTITIONED_LOGS PARTITION(log_date) SELECT pd.log_date,pd.log_level,pd.log_service_name,pd.message;
+FAILED: SemanticException [Error 10096]: Dynamic partition strict mode requires at least one static partition column. To turn this off set hive.exec.dynamic.partition.mode=nonstrict
+hive> set hive.exec.dynamic.partition.mode=nonstrict;
+hive> set hive.exec.dynamic.partition=true;
+hive> select * from logs_analysis limit 10;
+OK
+2025-05-01 11:39:00	INFO	InventoryService	Order placed
+2025-05-01 11:25:00	WARN	PaymentService	Address not verified
+2025-05-01 12:49:00	ERROR	ShippingService	Shipping error
+2025-05-01 14:33:00	WARN	ShippingService	Slow response time
+2025-05-01 10:27:00	INFO	ShippingService	Inventory updated
+2025-05-01 14:11:00	INFO	PaymentService	Order placed
+2025-05-01 12:28:00	ERROR	OrderService	Payment failed
+2025-05-01 13:54:00	ERROR	OrderService	Payment failed
+2025-05-01 14:54:00	ERROR	AuthService	Order placement failed
+2025-05-01 10:54:00	WARN	OrderService	Address not verified
+Time taken: 1.3 seconds
+hive> select *from partitioned_logs limit 10;
+OK
+Time taken: 0.12 seconds
+hive> select * from partitioned_logs limit 10;
+OK
+Time taken: 0.08 seconds
+hive> FROM LOGS_ANALYSIS pd INSERT OVERWRITE TABLE PARTITIONED_LOGS PARTITION(log_date) SELECT pd.log_date,pd.log_level,pd.log_service_name,pd.message;
+FAILED: SemanticException [Error 10002]: Line 1:117 Invalid column reference 'log_service_name'
+hive> FROM LOGS_ANALYSIS pd INSERT OVERWRITE TABLE PARTITIONED_LOGS PARTITION(log_date) SELECT pd.log_date,pd.log_level,pd.service_name,pd.message;    
+Total MapReduce jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_202505092051_0006, Tracking URL = http://0.0.0.0:50030/jobdetails.jsp?jobid=job_202505092051_0006
+Kill Command = /usr/lib/hadoop/bin/hadoop job  -kill job_202505092051_0006
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2025-05-10 05:46:26,687 Stage-1 map = 0%,  reduce = 0%
+2025-05-10 05:46:32,758 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.91 sec
+2025-05-10 05:46:33,790 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.91 sec
+2025-05-10 05:46:34,802 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.91 sec
+2025-05-10 05:46:35,811 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.91 sec
+MapReduce Total cumulative CPU time: 910 msec
+Ended Job = job_202505092051_0006
+Ended Job = -1941514641, job is filtered out (removed at runtime).
+Ended Job = -220879513, job is filtered out (removed at runtime).
+Moving data to: hdfs://localhost.localdomain:8020/tmp/hive-cloudera/hive_2025-05-10_05-46-20_520_4628271599747809872-1/-ext-10000
+Loading data to table default.partitioned_logs partition (log_date=null)
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20106': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20106': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20104': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20104': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Payment%20processed': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Payment%20processed': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20105': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20105': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20100': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20100': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Order%20placement%20failed': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Order%20placement%20failed': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20nearing%20threshold': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20nearing%20threshold': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Order%20placed': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Order%20placed': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Address%20not%20verified': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Address%20not%20verified': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Shipping%20error': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Shipping%20error': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Slow%20response%20time': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Slow%20response%20time': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20102': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20102': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20101': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20101': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20110': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20110': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Payment%20failed': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Payment%20failed': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Retrying%20payment': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Retrying%20payment': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20sync%20error': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20sync%20error': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Low%20stock%20alert': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Low%20stock%20alert': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20110': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20110': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20106': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20106': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20107': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20login%20successful%20for%20user%20107': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Shipping%20started': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Shipping%20started': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20109': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=User%20authentication%20failed%20for%20user%20109': Permission denied
+chgrp: changing ownership of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20updated': Permission denied
+chmod: changing permissions of 'hdfs://localhost.localdomain:8020/user/hive/warehouse/partitioned_logs/log_date=Inventory%20updated': Permission denied
+	Loading partition {log_date=User authentication failed for user 106}
+	Loading partition {log_date=User authentication failed for user 104}
+	Loading partition {log_date=Payment processed}
+	Loading partition {log_date=User authentication failed for user 105}
+	Loading partition {log_date=User login successful for user 100}
+	Loading partition {log_date=Order placement failed}
+	Loading partition {log_date=Inventory nearing threshold}
+	Loading partition {log_date=Order placed}
+	Loading partition {log_date=Address not verified}
+	Loading partition {log_date=Shipping error}
+	Loading partition {log_date=Slow response time}
+	Loading partition {log_date=User login successful for user 102}
+	Loading partition {log_date=User authentication failed for user 101}
+	Loading partition {log_date=User authentication failed for user 110}
+	Loading partition {log_date=Payment failed}
+	Loading partition {log_date=Retrying payment}
+	Loading partition {log_date=Inventory sync error}
+	Loading partition {log_date=Low stock alert}
+	Loading partition {log_date=User login successful for user 110}
+	Loading partition {log_date=User login successful for user 106}
+	Loading partition {log_date=User login successful for user 107}
+	Loading partition {log_date=Shipping started}
+	Loading partition {log_date=User authentication failed for user 109}
+	Loading partition {log_date=Inventory updated}
+Partition default.partitioned_logs{log_date=Address not verified} stats: [num_files: 1, num_rows: 0, total_size: 394, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Inventory nearing threshold} stats: [num_files: 1, num_rows: 0, total_size: 236, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Inventory sync error} stats: [num_files: 1, num_rows: 0, total_size: 324, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Inventory updated} stats: [num_files: 1, num_rows: 0, total_size: 326, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Low stock alert} stats: [num_files: 1, num_rows: 0, total_size: 190, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Order placed} stats: [num_files: 1, num_rows: 0, total_size: 398, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Order placement failed} stats: [num_files: 1, num_rows: 0, total_size: 321, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Payment failed} stats: [num_files: 1, num_rows: 0, total_size: 323, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Payment processed} stats: [num_files: 1, num_rows: 0, total_size: 78, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Retrying payment} stats: [num_files: 1, num_rows: 0, total_size: 156, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Shipping error} stats: [num_files: 1, num_rows: 0, total_size: 249, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Shipping started} stats: [num_files: 1, num_rows: 0, total_size: 229, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=Slow response time} stats: [num_files: 1, num_rows: 0, total_size: 157, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 101} stats: [num_files: 1, num_rows: 0, total_size: 42, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 104} stats: [num_files: 1, num_rows: 0, total_size: 41, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 105} stats: [num_files: 1, num_rows: 0, total_size: 42, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 106} stats: [num_files: 1, num_rows: 0, total_size: 83, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 109} stats: [num_files: 1, num_rows: 0, total_size: 83, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User authentication failed for user 110} stats: [num_files: 1, num_rows: 0, total_size: 39, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User login successful for user 100} stats: [num_files: 1, num_rows: 0, total_size: 41, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User login successful for user 102} stats: [num_files: 1, num_rows: 0, total_size: 74, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User login successful for user 106} stats: [num_files: 1, num_rows: 0, total_size: 40, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User login successful for user 107} stats: [num_files: 1, num_rows: 0, total_size: 81, raw_data_size: 0]
+Partition default.partitioned_logs{log_date=User login successful for user 110} stats: [num_files: 1, num_rows: 0, total_size: 37, raw_data_size: 0]
+Table default.partitioned_logs stats: [num_partitions: 24, num_files: 24, num_rows: 0, total_size: 3984, raw_data_size: 0]
+100 Rows loaded to partitioned_logs
+MapReduce Jobs Launched: 
+Job 0: Map: 1   Cumulative CPU: 0.91 sec   HDFS Read: 6350 HDFS Write: 3984 SUCCESS
+Total MapReduce CPU Time Spent: 910 msec
+OK
+Time taken: 21.711 seconds
+hive> 
